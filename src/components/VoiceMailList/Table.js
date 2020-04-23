@@ -14,21 +14,20 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
+
+function secsToDate(length){
+  var date = new Date(0);
+  date.setSeconds(length); 
+  return date.toISOString().substr(11, 8);
 }
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
+function parseFromTo(dir){
+  return dir.slice(0,dir.indexOf('@'));
+}
 
-export default function DenseTable() {
+
+export default function DenseTable(props) {
   const classes = useStyles();
-
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} size="small" aria-label="a dense table">
@@ -38,15 +37,19 @@ export default function DenseTable() {
             <TableCell align="right">From</TableCell>
             <TableCell align="right">To</TableCell>
             <TableCell align="right">Duration</TableCell>
+            <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.name}>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
+          {props.voicemails.map((vm) => (
+            <TableRow key={vm.media_id}>
+              <TableCell align="right">{vm.folder}</TableCell>
+              <TableCell align="right">{parseFromTo(vm.from)}</TableCell>
+              <TableCell align="right">{parseFromTo(vm.to)}</TableCell>
+              <TableCell align="right">{secsToDate(vm.length)}</TableCell>
+              <TableCell align="right"><button onClick={(e) => props.setFolder(e,vm,'new')}>New</button>
+              <button onClick={(e) => props.setFolder(e,vm,'saved')}>Save</button>
+              <button onClick={(e)=> props.setFolder(e,vm,'deleted')}> Delete</button></TableCell>
             </TableRow>
           ))}
         </TableBody>
